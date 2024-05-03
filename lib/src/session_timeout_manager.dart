@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'session_config.dart';
 
 enum SessionState { startListening, stopListening }
@@ -103,17 +104,16 @@ class _SessionTimeoutManagerState extends State<SessionTimeoutManager>
 
   @override
   Widget build(BuildContext context) {
-    // Attach Listener only if user wants to invalidate session on user inactivity
-    if (widget._sessionConfig.invalidateSessionForUserInactivity != null) {
-      return Listener(
-        onPointerDown: (_) {
-          recordPointerEvent();
-        },
-        child: widget.child,
-      );
-    }
-
-    return widget.child;
+    return Listener(
+      // Attach Listener only if user wants to invalidate session on user inactivity
+      onPointerDown: _isListensing &&
+              widget._sessionConfig.invalidateSessionForUserInactivity != null
+          ? (_) {
+              recordPointerEvent();
+            }
+          : null,
+      child: widget.child,
+    );
   }
 
   void recordPointerEvent() {
